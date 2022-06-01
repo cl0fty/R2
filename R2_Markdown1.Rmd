@@ -10,16 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## https://github.com/cl0fty/R2.git
+## June 2022
 
 ```{r}
-#https://github.com/cl0fty/R2.git
 #Webscraping attempt1
 #https://www.rstudio.com/blog/rvest-easy-web-scraping-with-r/
 
@@ -28,15 +22,15 @@ library(rvest)
 #install.packages(“xml2”)
 library(xml2)
 
-redfin <- 
-  read_html("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
-redfin
+# redfin <- 
+#   read_html("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
+# redfin
+# 
+# redfin %>%
+# html_elements(".homecardV2Price",) %>%  #html_nodes deprecated
+# html_text() %>%
+# redfin
 
-redfin %>%
-html_elements(".homecardV2Price",) %>%  #html_nodes deprecated
-html_text() %>%
-redfin
-  
 #need to clean it still
 ##################################
 #Part 2 - trying the DL link. Is there an API to learn to work with?
@@ -44,10 +38,56 @@ maxprice <- "500000"  #trying to make vars of settings like max and min prices
 minprice <- "200000"
 url <- paste("https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=", maxprice,"&min_price=", minprice, "&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=327&region_type=10&sold_within_days=365&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8", sep = "")
 # Specify destination where file should be saved
-destfile <- "C:/Users/lofti/Documents/R/Learning/output.csv"
+destfile <- paste("C:/Users/lofti/Documents/R/Learning/RedFin_Sold", Sys.Date(), ".csv", sep="")
 # Apply download.file function in R
 download.file(url, destfile, mode="wb")
 #  && Sys.Date() 
+reddata <- read.csv(destfile, header = T, sep = ",")
+
+
+n_cols_red <- ncol(reddata)
+n_rows_red <- nrow(reddata)
+names_red <- colnames(reddata)
+
+names_red
+
+library(ggplot2)
+
+price_with_color_viz <-
+    qplot(x= BEDS,
+          y= PRICE,
+          #color= BEDS,
+          data= reddata)
+price_with_color_viz
+
+
+# Multiple Linear Regression Example
+fit <- lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata)
+summary(fit) # show results
+
+
+    #Lot size not signif, p=.875 
+    #BEDS not signif, p=.10
+    
+    #Each increase in bath adds $38,580!
+    #Each increase in sqft adds $46
+        #Each 100 sqft adds $4,600
+    #Each increase in year built adds $842
+
+
+### https://www.redfin.com/minorcivildivision/1214/CT/Farmington/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,mr=10:327+10:322+10:1039+10:1263
+
+url2 <- "https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=500000&min_price=200000&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=327,322,1039,1263,1214&region_type=10,10,10,10,10&sf=1,2,3,5,6,7&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8"
+# Specify destination where file should be saved
+destfile2 <- paste("C:/Users/lofti/Documents/R/Learning/RedFin_Buy_", Sys.Date(), ".csv", sep="")
+# Apply download.file function in R
+download.file(url2, destfile2, mode="wb")
+#  && Sys.Date() 
+reddata_buy <- read.csv(destfile, header = T, sep = ",")
+
+
+
+
 
 ```
 

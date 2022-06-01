@@ -372,18 +372,13 @@ pre code {
 
 <div id="r-markdown" class="section level2">
 <h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting
-syntax for authoring HTML, PDF, and MS Word documents. For more details
-on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be
-generated that includes both content as well as the output of any
-embedded R code chunks within the document. You can embed an R code
-chunk like this:</p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the
-code chunk to prevent printing of the R code that generated the
-plot.</p>
-<pre class="r"><code>#https://github.com/cl0fty/R2.git
-#Webscraping attempt1
+</div>
+<div id="httpsgithub.comcl0ftyr2.git" class="section level2">
+<h2><a href="https://github.com/cl0fty/R2.git" class="uri">https://github.com/cl0fty/R2.git</a></h2>
+</div>
+<div id="june-2022" class="section level2">
+<h2>June 2022</h2>
+<pre class="r"><code>#Webscraping attempt1
 #https://www.rstudio.com/blog/rvest-easy-web-scraping-with-r/
 
 #install.packages(&quot;rvest&quot;)
@@ -392,30 +387,113 @@ library(rvest)</code></pre>
 <pre class="r"><code>#install.packages(“xml2”)
 library(xml2)</code></pre>
 <pre><code>## Warning: package &#39;xml2&#39; was built under R version 4.1.3</code></pre>
-<pre class="r"><code>redfin &lt;- 
-  read_html(&quot;https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr&quot;)
-redfin</code></pre>
-<pre><code>## {html_document}
-## &lt;html lang=&quot;en&quot;&gt;
-## [1] &lt;head&gt;\n&lt;!-- Server: phantom-20 --&gt;&lt;!-- Time generated: Wed Jun 01 2022 0 ...
-## [2] &lt;body class=&quot;customer-facing   photosMode route-SearchPage&quot;&gt;\n&lt;script&gt;var ...</code></pre>
-<pre class="r"><code>redfin %&gt;%
-html_elements(&quot;.homecardV2Price&quot;) %&gt;%
-html_text()</code></pre>
-<pre><code>##  [1] &quot;$490,000&quot;            &quot;$475,000&quot;            &quot;$270,000&quot;           
-##  [4] &quot;$330,000&quot;            &quot;$262,000&quot;            &quot;$275,000&quot;           
-##  [7] &quot;$272,500&quot;            &quot;$450,000&quot;            &quot;$493,000&quot;           
-## [10] &quot;$249,900&quot;            &quot;$446,000&quot;            &quot;$479,900&quot;           
-## [13] &quot;$329,900&quot;            &quot;$365,000&quot;            &quot;$320,000&quot;           
-## [16] &quot;$430,000&quot;            &quot;$440,000&quot;            &quot; Sign in for price &quot;
-## [19] &quot;$320,000&quot;            &quot;$299,900&quot;            &quot;$399,000&quot;           
-## [22] &quot;$339,900&quot;            &quot;$487,000&quot;            &quot;$360,000&quot;           
-## [25] &quot;$333,000&quot;            &quot;$445,000&quot;            &quot; Sign in for price &quot;
-## [28] &quot;$288,000&quot;            &quot;$309,000&quot;            &quot;$269,900&quot;           
-## [31] &quot;$305,000&quot;            &quot;$282,000&quot;            &quot;$290,000&quot;           
-## [34] &quot;$350,500&quot;            &quot;$475,000&quot;            &quot;$410,500&quot;           
-## [37] &quot;$360,000&quot;            &quot;$390,000&quot;            &quot;$435,000&quot;           
-## [40] &quot;$455,000&quot;</code></pre>
+<pre class="r"><code># redfin &lt;- 
+#   read_html(&quot;https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr&quot;)
+# redfin
+# 
+# redfin %&gt;%
+# html_elements(&quot;.homecardV2Price&quot;,) %&gt;%  #html_nodes deprecated
+# html_text() %&gt;%
+# redfin
+
+#need to clean it still
+##################################
+#Part 2 - trying the DL link. Is there an API to learn to work with?
+maxprice &lt;- &quot;500000&quot;  #trying to make vars of settings like max and min prices
+minprice &lt;- &quot;200000&quot;
+url &lt;- paste(&quot;https://www.redfin.com/stingray/api/gis-csv?al=1&amp;has_dishwasher=false&amp;has_laundry_facility=false&amp;has_laundry_hookups=false&amp;has_parking=false&amp;has_pool=false&amp;has_short_term_lease=false&amp;include_pending_homes=false&amp;isRentals=false&amp;is_furnished=false&amp;market=connecticut&amp;max_price=&quot;, maxprice,&quot;&amp;min_price=&quot;, minprice, &quot;&amp;num_baths=1&amp;num_beds=2&amp;num_homes=350&amp;ord=redfin-recommended-asc&amp;page_number=1&amp;region_id=327&amp;region_type=10&amp;sold_within_days=365&amp;status=9&amp;travel_with_traffic=false&amp;travel_within_region=false&amp;uipt=1&amp;utilities_included=false&amp;v=8&quot;, sep = &quot;&quot;)
+# Specify destination where file should be saved
+destfile &lt;- paste(&quot;C:/Users/lofti/Documents/R/Learning/RedFin_Sold&quot;, Sys.Date(), &quot;.csv&quot;, sep=&quot;&quot;)
+# Apply download.file function in R
+download.file(url, destfile, mode=&quot;wb&quot;)
+#  &amp;&amp; Sys.Date() 
+reddata &lt;- read.csv(destfile, header = T, sep = &quot;,&quot;)
+
+
+n_cols_red &lt;- ncol(reddata)
+n_rows_red &lt;- nrow(reddata)
+names_red &lt;- colnames(reddata)
+
+names_red</code></pre>
+<pre><code>##  [1] &quot;SALE.TYPE&quot;                                                                                  
+##  [2] &quot;SOLD.DATE&quot;                                                                                  
+##  [3] &quot;PROPERTY.TYPE&quot;                                                                              
+##  [4] &quot;ADDRESS&quot;                                                                                    
+##  [5] &quot;CITY&quot;                                                                                       
+##  [6] &quot;STATE.OR.PROVINCE&quot;                                                                          
+##  [7] &quot;ZIP.OR.POSTAL.CODE&quot;                                                                         
+##  [8] &quot;PRICE&quot;                                                                                      
+##  [9] &quot;BEDS&quot;                                                                                       
+## [10] &quot;BATHS&quot;                                                                                      
+## [11] &quot;LOCATION&quot;                                                                                   
+## [12] &quot;SQUARE.FEET&quot;                                                                                
+## [13] &quot;LOT.SIZE&quot;                                                                                   
+## [14] &quot;YEAR.BUILT&quot;                                                                                 
+## [15] &quot;DAYS.ON.MARKET&quot;                                                                             
+## [16] &quot;X..SQUARE.FEET&quot;                                                                             
+## [17] &quot;HOA.MONTH&quot;                                                                                  
+## [18] &quot;STATUS&quot;                                                                                     
+## [19] &quot;NEXT.OPEN.HOUSE.START.TIME&quot;                                                                 
+## [20] &quot;NEXT.OPEN.HOUSE.END.TIME&quot;                                                                   
+## [21] &quot;URL..SEE.https...www.redfin.com.buy.a.home.comparative.market.analysis.FOR.INFO.ON.PRICING.&quot;
+## [22] &quot;SOURCE&quot;                                                                                     
+## [23] &quot;MLS.&quot;                                                                                       
+## [24] &quot;FAVORITE&quot;                                                                                   
+## [25] &quot;INTERESTED&quot;                                                                                 
+## [26] &quot;LATITUDE&quot;                                                                                   
+## [27] &quot;LONGITUDE&quot;</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>price_with_color_viz &lt;-
+    qplot(x= BEDS,
+          y= PRICE,
+          #color= BEDS,
+          data= reddata)
+price_with_color_viz</code></pre>
+<pre><code>## Warning: Removed 6 rows containing missing values (geom_point).</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
+<pre class="r"><code># Multiple Linear Regression Example
+fit &lt;- lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata)
+summary(fit) # show results</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data = reddata)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -184583  -29381    2659   34068  166995 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.459e+06  3.487e+05  -4.184 4.10e-05 ***
+## BATHS        3.858e+04  7.411e+03   5.206 4.36e-07 ***
+## SQUARE.FEET  4.614e+01  7.464e+00   6.182 2.94e-09 ***
+## YEAR.BUILT   8.418e+02  1.799e+02   4.679 4.97e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 52940 on 225 degrees of freedom
+##   (6 observations deleted due to missingness)
+## Multiple R-squared:  0.5406, Adjusted R-squared:  0.5345 
+## F-statistic: 88.26 on 3 and 225 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>    #Lot size not signif, p=.875 
+    #BEDS not signif, p=.10
+    
+    #Each increase in bath adds $38,580!
+    #Each increase in sqft adds $46
+        #Each 100 sqft adds $4,600
+    #Each increase in year built adds $842
+
+
+### https://www.redfin.com/minorcivildivision/1214/CT/Farmington/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,mr=10:327+10:322+10:1039+10:1263
+
+url2 &lt;- &quot;https://www.redfin.com/stingray/api/gis-csv?al=1&amp;has_dishwasher=false&amp;has_laundry_facility=false&amp;has_laundry_hookups=false&amp;has_parking=false&amp;has_pool=false&amp;has_short_term_lease=false&amp;include_pending_homes=false&amp;isRentals=false&amp;is_furnished=false&amp;market=connecticut&amp;max_price=500000&amp;min_price=200000&amp;num_baths=1&amp;num_beds=2&amp;num_homes=350&amp;ord=redfin-recommended-asc&amp;page_number=1&amp;region_id=327,322,1039,1263,1214&amp;region_type=10,10,10,10,10&amp;sf=1,2,3,5,6,7&amp;status=9&amp;travel_with_traffic=false&amp;travel_within_region=false&amp;uipt=1&amp;utilities_included=false&amp;v=8&quot;
+# Specify destination where file should be saved
+destfile2 &lt;- paste(&quot;C:/Users/lofti/Documents/R/Learning/RedFin_Buy_&quot;, Sys.Date(), &quot;.csv&quot;, sep=&quot;&quot;)
+# Apply download.file function in R
+download.file(url2, destfile2, mode=&quot;wb&quot;)
+#  &amp;&amp; Sys.Date() 
+reddata_buy &lt;- read.csv(destfile, header = T, sep = &quot;,&quot;)</code></pre>
 </div>
 
 
