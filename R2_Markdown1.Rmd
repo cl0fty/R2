@@ -32,4 +32,21 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
+```{r}
+#Webscraping attempt1
+#https://www.rstudio.com/blog/rvest-easy-web-scraping-with-r/
+
+install.packages("rvest")
+library(rvest)
+
+redfin <- 
+  html_text("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
+
+redfin %>%
+  html_node("homecardV2Price")
+  html_text() %>%
+  as.numeric()
+view(redfin)
+```
+
 
