@@ -15,20 +15,6 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
-  speed-and-distance
-  #hello world
-  #https://resources.github.com/github-and-rstudio/
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
@@ -36,17 +22,36 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 #Webscraping attempt1
 #https://www.rstudio.com/blog/rvest-easy-web-scraping-with-r/
 
-install.packages("rvest")
+#install.packages("rvest")
 library(rvest)
+#install.packages(“xml2”)
+library(xml2)
 
 redfin <- 
-  html_text("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
+  read_html("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
+redfin
 
 redfin %>%
-  html_node("homecardV2Price")
-  html_text() %>%
-  as.numeric()
-view(redfin)
+html_nodes(".homecardV2Price") %>%
+html_text()
+```
+```{r}
+scrape_url <- "https://www.york.ac.uk/teaching/cws/wws/webpage1.html"
+
+flat_html <- readLines(con = "https://www.york.ac.uk/teaching/cws/wws/webpage1.html")
+flat_html
 ```
 
+```{r}
+#install.packages("RCurl")
+library(RCurl)
+ftp_url <- "ftp://cran.r-project.org/pub/R/web/packages/BayesMixSurv/"
+
+get_files <- getURL(ftp_url, dirlistonly = TRUE)
+get_files
+```
+```{r}
+install.packages("XML")
+
+```
 
