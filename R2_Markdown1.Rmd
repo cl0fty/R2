@@ -19,6 +19,7 @@ When you click the **Knit** button a document will be generated that includes bo
 summary(cars)
   speed-and-distance
   #hello world
+  #https://resources.github.com/github-and-rstudio/
 ```
 
 ## Including Plots
