@@ -19,6 +19,7 @@ When you click the **Knit** button a document will be generated that includes bo
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ```{r}
+#https://github.com/cl0fty/R2.git
 #Webscraping attempt1
 #https://www.rstudio.com/blog/rvest-easy-web-scraping-with-r/
 
@@ -32,26 +33,21 @@ redfin <-
 redfin
 
 redfin %>%
-html_nodes(".homecardV2Price") %>%
-html_text()
-```
-```{r}
-scrape_url <- "https://www.york.ac.uk/teaching/cws/wws/webpage1.html"
-
-flat_html <- readLines(con = "https://www.york.ac.uk/teaching/cws/wws/webpage1.html")
-flat_html
-```
-
-```{r}
-#install.packages("RCurl")
-library(RCurl)
-ftp_url <- "ftp://cran.r-project.org/pub/R/web/packages/BayesMixSurv/"
-
-get_files <- getURL(ftp_url, dirlistonly = TRUE)
-get_files
-```
-```{r}
-install.packages("XML")
+html_elements(".homecardV2Price",) %>%  #html_nodes deprecated
+html_text() %>%
+redfin
+  
+#need to clean it still
+##################################
+#Part 2 - trying the DL link. Is there an API to learn to work with?
+maxprice <- "500000"  #trying to make vars of settings like max and min prices
+minprice <- "200000"
+url <- paste("https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=", maxprice,"&min_price=", minprice, "&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=327&region_type=10&sold_within_days=365&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8", sep = "")
+# Specify destination where file should be saved
+destfile <- "C:/Users/lofti/Documents/R/Learning/output.csv"
+# Apply download.file function in R
+download.file(url, destfile, mode="wb")
+#  && Sys.Date() 
 
 ```
 
