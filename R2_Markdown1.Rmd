@@ -21,8 +21,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(rvest)
 #install.packages(“xml2”)
 library(xml2)
+#install.packages("magrittr") # package installations are only needed the first time you use it
+#install.packages("dplyr")    # alternative installation of the %>%
+library(magrittr) # needs to be run every time you start R and want to use %>%
+library(dplyr)    # alternatively, this also loads %>%
 
-# redfin <- 
+# redfin <-
 #   read_html("https://www.redfin.com/minorcivildivision/327/CT/Cheshire/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,include=sold-1yr")
 # redfin
 # 
@@ -31,40 +35,79 @@ library(xml2)
 # html_text() %>%
 # redfin
 
+
+
+
+redhouse <-
+  read_html("https://www.redfin.com/CT/Cheshire/178-Harrison-Rd-06410/home/53752187")
+
+#redhouse %>%
+html_attrs("timeline-content")
+
+read <- read_html("https://www.redfin.com/CT/Cheshire/178-Harrison-Rd-06410/home/53752187")
+
+
+library(rvest)
+library(dplyr)
+link = "https://www.imdb.com/search/title/?title_type=feature&num_votes=25000,&genres=adventure"
+page = read_html(link)
+titles <- page %>% html_elements(".lister-item-header a") %>% html_text()
+
+#install.packages(tibble)
+#install.packages(jsonlite)
+library(rvest)
+library(dplyr)
+library(tibble)
+library(jsonlite)
+redhouse <- read_html("https://www.redfin.com/CT/Cheshire/178-Harrison-Rd-06410/home/53752187")
+prices <- redhouse %>% html_elements('#propertyHistory') %>% html_text()                               %>%
+strsplit("(propertyHistory = )|(}catch")  %>%
+unlist()                                  %>%
+`[`(2)                                    %>%  
+fromJSON()  
+prices
+#I think it's behind JSON #propertyHistory
+
+
+
 #need to clean it still
 ##################################
 #Part 2 - trying the DL link. Is there an API to learn to work with?
 maxprice <- "500000"  #trying to make vars of settings like max and min prices
 minprice <- "200000"
-url <- paste("https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=", maxprice,"&min_price=", minprice, "&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=327&region_type=10&sold_within_days=365&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8", sep = "")
+url <- paste("https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=", maxprice, "&min_price=",  minprice, "&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=327,1263,1214,26659,1229&region_type=10,10,10,6,10&sold_within_days=90&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8", sep = "")
 # Specify destination where file should be saved
 destfile <- paste("C:/Users/lofti/Documents/R/Learning/RedFin_Sold", Sys.Date(), ".csv", sep="")
 # Apply download.file function in R
 download.file(url, destfile, mode="wb")
 #  && Sys.Date() 
-reddata <- read.csv(destfile, header = T, sep = ",")
+reddata_sold <- read.csv(destfile, header = T, sep = ",")
 
 
-n_cols_red <- ncol(reddata)
-n_rows_red <- nrow(reddata)
-names_red <- colnames(reddata)
+n_cols_red <- ncol(reddata_sold)
+n_rows_red <- nrow(reddata_sold)
+names_red <- colnames(reddata_sold)
 
 names_red
 
-library(ggplot2)
-
-price_with_color_viz <-
-    qplot(x= BEDS,
-          y= PRICE,
-          #color= BEDS,
-          data= reddata)
-price_with_color_viz
+# library(ggplot2)
+# 
+# price_with_color_viz <-
+#     qplot(x= BEDS,
+#           y= PRICE,
+#           #color= BEDS,
+#           data= reddata_sold)
+# price_with_color_viz
 
 
 # Multiple Linear Regression Example
-fit <- lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata)
-summary(fit) # show results
+# fit <- lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata_sold)
+# summary(fit) # show results
 
+matrix_coef <- summary(
+  lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata_sold))$coefficients  
+    # Extract coefficients in matrix
+matrix_coef      # Return matrix of coefficients
 
     #Lot size not signif, p=.875 
     #BEDS not signif, p=.10
@@ -74,6 +117,14 @@ summary(fit) # show results
         #Each 100 sqft adds $4,600
     #Each increase in year built adds $842
 
+Intercept <- matrix_coef[1, 1] # Matrix manipulation to extract estimates
+Bath_coef <- matrix_coef[2, 1]    
+SqFt_coef <- matrix_coef[3, 1]
+Year_coef <- matrix_coef[4, 1]
+
+
+predprice <- Intercept + (2  * Bath_coef) + (1260 * SqFt_coef) + (1947 * Year_coef)
+predprice
 
 ### https://www.redfin.com/minorcivildivision/1214/CT/Farmington/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,mr=10:327+10:322+10:1039+10:1263
 
@@ -83,9 +134,37 @@ destfile2 <- paste("C:/Users/lofti/Documents/R/Learning/RedFin_Buy_", Sys.Date()
 # Apply download.file function in R
 download.file(url2, destfile2, mode="wb")
 #  && Sys.Date() 
-reddata_buy <- read.csv(destfile, header = T, sep = ",")
+reddata_buy <- read.csv(destfile2, header = T, sep = ",")
 
+col_reddata_buy <- colnames(reddata_buy)
+col_reddata_buy
 
+# Multiple Linear Regression Example
+reddata_buy$CITY <- relevel(factor(reddata_buy$CITY), ref="Madison") #choose reference City
+
+fit <- lm(PRICE ~ BEDS + BATHS + SQUARE.FEET + LOT.SIZE + YEAR.BUILT + CITY, data=reddata_buy)
+summary(fit) # show results
+
+##Nothing signif at this low N
+############################################
+###Part3
+#NH County
+url_NHC <- "https://www.redfin.com/stingray/api/gis-csv?al=1&has_dishwasher=false&has_laundry_facility=false&has_laundry_hookups=false&has_parking=false&has_pool=false&has_short_term_lease=false&include_pending_homes=false&isRentals=false&is_furnished=false&market=connecticut&max_price=500000&min_price=200000&num_baths=1&num_beds=2&num_homes=350&ord=redfin-recommended-asc&page_number=1&region_id=429&region_type=5&sf=1,2,3,5,6,7&status=9&travel_with_traffic=false&travel_within_region=false&uipt=1&utilities_included=false&v=8"
+# Specify destination where file should be saved
+destfile_NHC <- paste("C:/Users/lofti/Documents/R/Learning/RedFin_NHC_Buy_", Sys.Date(), ".csv", sep="")
+# Apply download.file function in R
+download.file(url_NHC, destfile_NHC, mode="wb")
+#  && Sys.Date() 
+reddata_NHC_buy <- read.csv(destfile_NHC, header = T, sep = ",")
+
+col_reddata_buy <- colnames(reddata_NHC_buy)
+col_reddata_buy
+
+# Multiple Linear Regression Example
+reddata_NHC_buy$CITY <- relevel(factor(reddata_NHC_buy$CITY), ref="Orange") #choose reference City
+
+fit <- lm(PRICE ~ BEDS + BATHS + SQUARE.FEET + LOT.SIZE + YEAR.BUILT, data=reddata_NHC_buy)
+summary(fit) # show results
 
 
 

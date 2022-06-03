@@ -61,3 +61,19 @@ Now, let’s see how many tables this webpage exactly has:
   
   ```
   
+  # vectors have variables of _one_ type
+  c(1, 2, "three")
+  # shorter arguments are recycled
+  (1:3) * 2
+  (1:4) * c(1, 2)
+  # warning! (why?)
+  (1:4) * (1:3)
+
+  
+  
+  link = "https://www.imdb.com/search/title/?title_type=feature&num_votes=25000,&genres=adventure"
+  page = read_html(link)
+  
+  
+  
+  
