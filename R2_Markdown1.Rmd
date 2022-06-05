@@ -105,25 +105,26 @@ names_red
 # summary(fit) # show results
 
 matrix_coef <- summary(
-  lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT, data=reddata_sold))$coefficients  
+  lm(PRICE ~ BATHS + SQUARE.FEET + YEAR.BUILT + LOT.SIZE, data=reddata_sold))$coefficients  
     # Extract coefficients in matrix
 matrix_coef      # Return matrix of coefficients
 
     #Lot size not signif, p=.875 
     #BEDS not signif, p=.10
     
-    #Each increase in bath adds $38,580!
+    #Each increase in bath adds $36K!
     #Each increase in sqft adds $46
         #Each 100 sqft adds $4,600
-    #Each increase in year built adds $842
+    #Each increase in year built adds $323
+    #Each increase in lot size adds $27
 
 Intercept <- matrix_coef[1, 1] # Matrix manipulation to extract estimates
 Bath_coef <- matrix_coef[2, 1]    
 SqFt_coef <- matrix_coef[3, 1]
 Year_coef <- matrix_coef[4, 1]
+Lot_coef  <- matrix_coef[5, 1]
 
-
-predprice <- Intercept + (2  * Bath_coef) + (1260 * SqFt_coef) + (1947 * Year_coef)
+predprice <- Intercept + (2  * Bath_coef) + (1675 * SqFt_coef) + (1955 * Year_coef) + (14810 * Lot_coef)
 predprice
 
 ### https://www.redfin.com/minorcivildivision/1214/CT/Farmington/filter/property-type=house,min-price=200k,max-price=500k,min-beds=2,min-baths=1,mr=10:327+10:322+10:1039+10:1263
